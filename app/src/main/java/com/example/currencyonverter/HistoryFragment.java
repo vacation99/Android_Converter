@@ -1,7 +1,5 @@
 package com.example.currencyonverter;
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,20 +12,23 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.currencyonverter.adapter.RecyclerViewAdapter;
-import com.example.currencyonverter.database.ObjectInDB;
+import com.example.currencyonverter.database.DataModel;
+import com.example.currencyonverter.model.ObjectForFragment;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class HistoryFragment extends Fragment implements RecyclerViewAdapter.OnCurrencyListener {
 
     private RecyclerView recyclerView;
     private RecyclerViewAdapter recyclerViewAdapter;
-    private ArrayList<ObjectInDB> arrayList = new ArrayList<>();
+    private ArrayList<ObjectForFragment> arrayList = new ArrayList<>();
     private TextView textView_history;
+    private View view;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_history, container, false);
+        view = inflater.inflate(R.layout.fragment_history, container, false);
 
         textView_history = view.findViewById(R.id.textViewHistory);
 
@@ -36,39 +37,34 @@ public class HistoryFragment extends Fragment implements RecyclerViewAdapter.OnC
         recyclerViewAdapter = new RecyclerViewAdapter(this);
         recyclerView.setAdapter(recyclerViewAdapter);
 
-        OnHistoryFragmentListener onHistoryFragmentListener = (OnHistoryFragmentListener) view.getContext();
-        onHistoryFragmentListener.loadDB();
+        realmDB();
 
         return view;
     }
 
-    public void dataBase(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS history (result TEXT, mainCurr TEXT, oldCurr TEXT, mainCourse TEXT, secondCourse TEXT, date TEXT, count TEXT)");
-        Cursor cursor = db.rawQuery("SELECT * FROM history;", null);
+    public void realmDB() {
+        OnHistoryFragmentListener onHistoryFragmentListener = (OnHistoryFragmentListener) view.getContext();
 
-        if (cursor.getCount() == 0) {
-            recyclerView.setVisibility(View.INVISIBLE);
+        List<DataModel> dataModels = onHistoryFragmentListener.loadRealm();
+        arrayList.clear();
+
+        if (dataModels.size() == 0) {
             textView_history.setVisibility(View.VISIBLE);
-        }
-        else {
-            arrayList.clear();
-            recyclerView.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.INVISIBLE);
+        } else {
             textView_history.setVisibility(View.INVISIBLE);
-            while (cursor.moveToNext()) {
-                String result = cursor.getString(0);
-                String mainCurr = cursor.getString(1);
-                String oldCurr = cursor.getString(2);
-                String mainCourse = cursor.getString(3);
-                String secondCourse = cursor.getString(4);
-                String date = cursor.getString(5);
-                String count = cursor.getString(6);
-                ObjectInDB objectInDB = new ObjectInDB(mainCurr, oldCurr, mainCourse, secondCourse, date, Integer.parseInt(count), Float.parseFloat(result));
-                arrayList.add(objectInDB);
+            recyclerView.setVisibility(View.VISIBLE);
+
+            for (int i = 0; i < dataModels.size(); i++) {
+                arrayList.add(new ObjectForFragment(dataModels.get(i).getMainCurr(),
+                        dataModels.get(i).getSecondCurr(),
+                        dataModels.get(i).getDate(),
+                        dataModels.get(i).getCount(),
+                        dataModels.get(i).getResult()));
             }
+
             recyclerViewAdapter.setItems(arrayList);
         }
-        cursor.close();
-        db.close();
     }
 
     @Override
@@ -85,6 +81,6 @@ public class HistoryFragment extends Fragment implements RecyclerViewAdapter.OnC
     }
 
     interface OnHistoryFragmentListener {
-        void loadDB();
+        List<DataModel> loadRealm();
     }
 }

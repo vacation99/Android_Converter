@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -14,7 +13,7 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import com.example.currencyonverter.model.Currency;
-import com.example.currencyonverter.model.Object;
+import com.example.currencyonverter.pojo.Object;
 import com.example.currencyonverter.retrofit.RetrofitInterface;
 
 import java.text.SimpleDateFormat;
@@ -111,28 +110,6 @@ public class ConverterFragment extends Fragment {
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(view.getContext(), android.R.layout.simple_spinner_item, strings);
         spinner_main.setAdapter(arrayAdapter);
         spinner_second.setAdapter(arrayAdapter);
-        AdapterView.OnItemSelectedListener itemSelectedListener_1 = new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                main = (String) parent.getItemAtPosition(position);
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        };
-        AdapterView.OnItemSelectedListener itemSelectedListener_2 = new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                second = (String) parent.getItemAtPosition(position);
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        };
-        spinner_main.setOnItemSelectedListener(itemSelectedListener_1);
-        spinner_second.setOnItemSelectedListener(itemSelectedListener_2);
 
         button_convert.setOnClickListener(v -> {
             if (textView_count.getText().toString().equals(""))
@@ -141,6 +118,8 @@ public class ConverterFragment extends Fragment {
                 float firstNum = 0, secondNum = 0;
                 boolean firstDone = false, secondDone = false;
                 int count = Integer.parseInt(textView_count.getText().toString());
+                main = (String) spinner_main.getSelectedItem();
+                second = (String) spinner_second.getSelectedItem();
 
                 for (int i = 0; i < currencyArrayList.size(); i++) {
                     if (main.equals(currencyArrayList.get(i).getName())) {
@@ -158,20 +137,17 @@ public class ConverterFragment extends Fragment {
 
                 textView_result.setText(String.format("%.4f", result));
 
-                onConverterFragmentListener.sendData(String.format("%.4f", result), main, second, String.valueOf(firstNum), String.valueOf(secondNum), currentDate, String.valueOf(count));
+                onConverterFragmentListener.sendToRealm(Float.parseFloat(String.format("%.4f", result)), main, second, currentDate, count);
             }
         });
 
-        button_clearDB.setOnClickListener(v -> {
-            onConverterFragmentListener.clearDB();
-            Toast.makeText(view.getContext(), "История успешно очистилась", Toast.LENGTH_LONG).show();
-        });
+        button_clearDB.setOnClickListener(v -> onConverterFragmentListener.clearDB());
 
         return view;
     }
 
     interface OnConverterFragmentListener {
-        void sendData(String result, String mainCurr, String oldCurr, String mainCourse, String secondCourse, String date, String count);
         void clearDB();
+        void sendToRealm(float result, String mainCurr, String secondCurr, String date, int count);
     }
 }

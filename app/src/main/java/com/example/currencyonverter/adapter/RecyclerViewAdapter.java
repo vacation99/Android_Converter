@@ -7,14 +7,14 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.currencyonverter.database.ObjectInDB;
+import com.example.currencyonverter.model.ObjectForFragment;
 import com.example.currencyonverter.R;
 
 import java.util.ArrayList;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.SimpleViewHolder> {
 
-    private ArrayList<ObjectInDB> arrayList = new ArrayList<>();
+    private ArrayList<ObjectForFragment> arrayList = new ArrayList<>();
     private OnCurrencyListener monCurrencyListener;
 
     public RecyclerViewAdapter(OnCurrencyListener onCurrencyListener) {
@@ -38,9 +38,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return arrayList.size();
     }
 
-    public void setItems(ArrayList<ObjectInDB> objectInDBS) {
+    public void setItems(ArrayList<ObjectForFragment> objectForFragments) {
         arrayList.clear();
-        arrayList.addAll(objectInDBS);
+        arrayList.addAll(objectForFragments);
         notifyDataSetChanged();
     }
 
@@ -60,9 +60,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             });
         }
 
-        public void bind(ObjectInDB objectInDB) {
-            title.setText("Количесвто: " + objectInDB.getCount());
-            date.setText(objectInDB.getDate());
+        public void bind(ObjectForFragment objectForFragment) {
+            title.setText("Количесвто: " + objectForFragment.getCount());
+            date.setText(objectForFragment.getDate());
         }
     }
 
