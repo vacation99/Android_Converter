@@ -45,13 +45,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     class SimpleViewHolder extends RecyclerView.ViewHolder {
-        private TextView title, date;
+        private TextView title, date, cur;
         OnCurrencyListener onCurrencyListener;
 
         public SimpleViewHolder(View itemView, OnCurrencyListener onCurrencyListener) {
             super(itemView);
             title = itemView.findViewById(R.id.textViewObjectCount);
             date = itemView.findViewById(R.id.textViewObjectDate);
+            cur = itemView.findViewById(R.id.textViewCurrency);
             this.onCurrencyListener = onCurrencyListener;
 
             itemView.setOnClickListener(v -> {
@@ -63,6 +64,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         public void bind(ObjectForFragment objectForFragment) {
             title.setText("Количесвто: " + objectForFragment.getCount());
             date.setText(objectForFragment.getDate());
+            cur.setText("Валюта: " + objectForFragment.getMainCurr());
         }
     }
 

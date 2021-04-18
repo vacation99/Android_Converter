@@ -29,11 +29,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ConverterFragment extends Fragment {
 
-    private final String[] strings = new String[] {"AUD (Австралийский доллар)", "AZN (Азербайджанский манат)", "GBP (Фунт стерлингов Соединенного королевства)", "AMD (Армянских драмов)",
-            "BYN (Белорусский рубль)", "BGN (Болгарский лев)", "BRL (Бразильский реал)", "HUF (Венгерских форинтов)", "HKD (Гонконгских долларов)", "DKK (Датская крона)", "USD (Доллар США)",
-            "EUR (Евро)", "INR (Индийских рупий)", "KZT (Казахстанских тенге)", "CAD (Канадский доллар)", "KGS (Киргизских сомов)", "CNY (Китайский юань)", "MDL (Молдавских леев)", "NOK (Норвежских крон)",
-            "PLN (Польский злотый)", "RON (Румынский лей)", "XDR (СДР (специальные права заимствования))", "SGD (Сингапурский доллар)", "TJS (Таджикских сомони)", "TRY (Турецких лир)",
-            "TMT (Новый туркменский манат)", "UZS (Узбекских сумов)", "UAH (Украинских гривен)", "CZK (Чешских крон)", "SEK (Шведских крон)", "CHF (Швейцарский франк)", "ZAR (Южноафриканских рэндов)",
+    private final String[] strings = new String[] {
+            "AUD (Австралийский доллар)", "AZN (Азербайджанский манат)", "GBP (Фунт стерлингов Соединенного королевства)", "AMD (Армянских драмов)",
+            "BYN (Белорусский рубль)", "BGN (Болгарский лев)", "BRL (Бразильский реал)", "HUF (Венгерских форинтов)",
+            "HKD (Гонконгских долларов)", "DKK (Датская крона)", "USD (Доллар США)", "EUR (Евро)",
+            "INR (Индийских рупий)", "KZT (Казахстанских тенге)", "CAD (Канадский доллар)", "KGS (Киргизских сомов)",
+            "CNY (Китайский юань)", "MDL (Молдавских леев)", "NOK (Норвежских крон)", "PLN (Польский злотый)",
+            "RON (Румынский лей)", "XDR (СДР (специальные права заимствования))", "SGD (Сингапурский доллар)", "TJS (Таджикских сомони)",
+            "TRY (Турецких лир)", "TMT (Новый туркменский манат)", "UZS (Узбекских сумов)", "UAH (Украинских гривен)",
+            "CZK (Чешских крон)", "SEK (Шведских крон)", "CHF (Швейцарский франк)", "ZAR (Южноафриканских рэндов)",
             "KRW (Вон Республики Корея)", "JPY (Японских иен)", "RUB (Российский рубль)"};
     private String main, second, currentDate;
     private OnConverterFragmentListener onConverterFragmentListener;
@@ -103,7 +107,7 @@ public class ConverterFragment extends Fragment {
             }
             @Override
             public void onFailure(Call<Object> call, Throwable t) {
-
+                t.printStackTrace();
             }
         });
 
@@ -137,7 +141,7 @@ public class ConverterFragment extends Fragment {
 
                 textView_result.setText(String.format("%.4f", result));
 
-                onConverterFragmentListener.sendToRealm(Float.parseFloat(String.format("%.4f", result)), main, second, currentDate, count);
+                onConverterFragmentListener.sendToRealm(String.format("%.4f", result), main, second, currentDate, count);
             }
         });
 
@@ -148,6 +152,6 @@ public class ConverterFragment extends Fragment {
 
     interface OnConverterFragmentListener {
         void clearDB();
-        void sendToRealm(float result, String mainCurr, String secondCurr, String date, int count);
+        void sendToRealm(String result, String mainCurr, String secondCurr, String date, int count);
     }
 }

@@ -7,9 +7,8 @@ public class DataModel extends RealmObject {
 
     @PrimaryKey
     long id;
-    String mainCurr, secondCurr, date;
+    String mainCurr, secondCurr, date, result;
     int count;
-    float result;
 
     public long getId() {
         return id;
@@ -51,11 +50,11 @@ public class DataModel extends RealmObject {
         this.count = count;
     }
 
-    public float getResult() {
+    public String getResult() {
         return result;
     }
 
-    public void setResult(float result) {
+    public void setResult(String result) {
         this.result = result;
     }
 }

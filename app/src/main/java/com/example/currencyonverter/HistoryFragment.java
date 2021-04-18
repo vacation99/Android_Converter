@@ -24,11 +24,13 @@ public class HistoryFragment extends Fragment implements RecyclerViewAdapter.OnC
     private RecyclerViewAdapter recyclerViewAdapter;
     private ArrayList<ObjectForFragment> arrayList = new ArrayList<>();
     private TextView textView_history;
-    private View view;
+    private OnHistoryFragmentListener onHistoryFragmentListener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_history, container, false);
+        View view = inflater.inflate(R.layout.fragment_history, container, false);
+
+        onHistoryFragmentListener = (OnHistoryFragmentListener) view.getContext();
 
         textView_history = view.findViewById(R.id.textViewHistory);
 
@@ -43,8 +45,6 @@ public class HistoryFragment extends Fragment implements RecyclerViewAdapter.OnC
     }
 
     public void realmDB() {
-        OnHistoryFragmentListener onHistoryFragmentListener = (OnHistoryFragmentListener) view.getContext();
-
         List<DataModel> dataModels = onHistoryFragmentListener.loadRealm();
         arrayList.clear();
 
@@ -56,11 +56,14 @@ public class HistoryFragment extends Fragment implements RecyclerViewAdapter.OnC
             recyclerView.setVisibility(View.VISIBLE);
 
             for (int i = 0; i < dataModels.size(); i++) {
-                arrayList.add(new ObjectForFragment(dataModels.get(i).getMainCurr(),
+                arrayList.add(new ObjectForFragment(
+                        dataModels.get(i).getMainCurr(),
                         dataModels.get(i).getSecondCurr(),
                         dataModels.get(i).getDate(),
                         dataModels.get(i).getCount(),
-                        dataModels.get(i).getResult()));
+                        dataModels.get(i).getResult(),
+                        dataModels.get(i).getId())
+                );
             }
 
             recyclerViewAdapter.setItems(arrayList);
@@ -71,16 +74,22 @@ public class HistoryFragment extends Fragment implements RecyclerViewAdapter.OnC
     public void onCurrencyClick(int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Подробная информация")
-                .setMessage("Из какой: " + arrayList.get(position).getMainCurr() + "\n" +
+                .setMessage(
+                        "Из какой: " + arrayList.get(position).getMainCurr() + "\n" +
                         "В какую: " + arrayList.get(position).getSecondCurr() + "\n" +
                         "Количество: " + arrayList.get(position).getCount() + "\n" +
                         "Результат: " + arrayList.get(position).getResult() + "\n" +
                         "Дата: " + arrayList.get(position).getDate())
-                .setNegativeButton("Закрыть", (dialog, which) -> {})
+                .setNegativeButton("Удалить", (dialog, which) -> {
+                    onHistoryFragmentListener.deleteFromRealm(arrayList.get(position).getId());
+                    dialog.dismiss();
+                })
+                .setPositiveButton("Закрыть", (dialog, which) -> {})
                 .show();
     }
 
     interface OnHistoryFragmentListener {
         List<DataModel> loadRealm();
+        void deleteFromRealm(long id);
     }
 }
